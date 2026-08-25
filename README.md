@@ -2,6 +2,8 @@
 
 This public repository distributes the ONE Codex plugin. The ONE server, data, authentication, and permission enforcement remain hosted by GeoTech; this repository contains only the installable plugin manifest, registered connector mapping, workflow skill, documentation, and plugin assets. Through the hosted connector, `get_brand_standards` exposes the authoritative GeoTech logos, exact palette, typography, patterns, Firebase-hosted source files, and usage guidance.
 
+The bundled skill covers guarded Procurement and project-planning workflows with read-before-write, optimistic revisions, idempotent retries, and exact destructive confirmations. Hiring is intentionally not an API, MCP, or plugin capability in the current scope and remains available only in ONE's reviewed UI.
+
 ## Install from Codex desktop
 
 No terminal command or repository clone is required:

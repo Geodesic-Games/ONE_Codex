@@ -1,6 +1,6 @@
 {
   "name": "one",
-  "version": "0.4.2+codex.20260805170900",
+  "version": "0.4.2+codex.20260824154732",
   "description": "Use ONE boards, operational workspaces, and authoritative GeoTech brand standards from Codex with per-user OAuth and live permissions.",
   "author": {
     "name": "GeoTech",
@@ -23,14 +23,21 @@
   "interface": {
     "displayName": "ONE",
     "shortDescription": "Work with ONE and GeoTech brand standards.",
-    "longDescription": "Connect Codex to ONE using your Google account. ONE applies live permissions for every tool call and publishes authoritative GeoTech standards with Firebase-hosted assets for presentations, Complex Decisions, documents, charts, diagrams, and visual design.",
+    "longDescription": "Connect Codex to ONE using your Google account. ONE applies live permissions for every board, project-planning, Procurement, Remote Machine, redacted administration audit, Hardware asset, private document, Finance, protected backup, and brand-standard tool call, including owner-only sensitive backup export and explicit People-document access. Hiring remains ONE UI-only.",
     "developerName": "GeoTech",
     "category": "Sales",
     "capabilities": [
       "OAuth",
       "Read",
       "Write",
-      "Brand standards"
+      "Brand standards",
+      "Hardware lifecycle",
+      "Procurement workflow",
+      "Project planning",
+      "Private documents",
+      "Protected backups",
+      "Remote Machines",
+      "Administration audit"
     ],
     "websiteURL": "https://one.geotech.one/",
     "privacyPolicyURL": "https://one.geotech.one/privacy",
@@ -39,7 +46,12 @@
       "List the ONE boards I can access.",
       "Get the GeoTech brand standards before designing a presentation.",
       "Find recent contacts in ONE matching a company name.",
-      "Create an item in ONE after confirming the board and fields."
+      "Create an item in ONE after confirming the board and fields.",
+      "List Hardware assets and their private documents that I can access.",
+      "List recent ONE backup metadata without exporting protected data.",
+      "Audit ONE access and API-key metadata without exposing secrets.",
+      "Create a Procurement request after showing its ordered approval chain.",
+      "Show a project's statuses and sprints before changing its planning structure."
     ],
     "brandColor": "#287DFF",
     "composerIcon": "./assets/geotech-one.png",

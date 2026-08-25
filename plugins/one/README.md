@@ -102,8 +102,34 @@ Useful requests:
 - `Show the Deals schema before creating anything.`
 - `Preview moving these Production items to Review without applying it.`
 - `Add this meeting note to the selected contact.`
+- `List the Hardware assets I can access and show their current custodians.`
+- `Move this asset to the Amsterdam office after showing me its current revision and history.`
+- `List my permitted People documents without exposing storage links.`
+- `List recent ONE backups and show their protected-root coverage without exporting the data.`
+- `As the signed-in owner, export this backup and report its SHA-256 checksum.`
+- `List Remote Machines and show current availability and bookings.`
+- `As a ONE administrator, audit users, grants, invitations, and API-key metadata without exposing secrets.`
+- `Create this Procurement request with the ordered approvers, then show me the saved approval state.`
+- `Show this project's statuses and sprints before proposing the requested planning change.`
 
 Deleting an item requires the exact current item name as confirmation and uses ONE's existing soft-delete audit path.
+Hardware lifecycle uses the person's Hardware module grant. People document tools require the separate sensitive
+**People Documents** view/edit grant; ordinary People or board access does not reveal those files.
+Backup inventory and metadata are read-only. Complete export is available only to a signed-in ONE owner and carries
+sensitive operational JSON; API keys cannot export. Import, restore, deletion, retention settings, and automatic-backup
+settings remain in ONE's reviewed Backups panel and are intentionally not plugin tools.
+Remote Machine color/archive and the administration audit require a signed-in ONE owner or administrator; API keys are
+not accepted. Archive requires the exact current machine name, resolves aliases on the server, clears live runtime and
+bookings, and does not uninstall OneClient. The audit is read-only and omits hashes, reusable secrets, bridge settings,
+connector tokens, and credentials. Permission, invitation, key, bridge, retention, and client-lifecycle mutations remain
+reviewed ONE workflows and are intentionally not plugin tools.
+Procurement is a person-bound workflow: Codex reads the current request before each change, passes its fresh version,
+uses stable idempotency keys for retryable writes, and requires exact confirmation before destructive actions. Project
+planning follows the same revision discipline for source control, statuses, sprints, automation decisions, comments,
+attachments, and task deletion.
+
+Hiring remains available only in ONE's reviewed UI. It has no API, MCP, or ONE Codex plugin operations in the current
+scope, and the plugin must not approximate Hiring through generic board, item, file, search, or People-document tools.
 
 ## Update or remove
 
