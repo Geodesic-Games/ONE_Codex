@@ -1,0 +1,18 @@
+{
+  "name": "one",
+  "description": "Connect Cursor to ONE CRM and operational workspaces with per-user OAuth and live permissions.",
+  "version": "0.5.0",
+  "author": {
+    "name": "GeoTech",
+    "email": "support@geotech.one"
+  },
+  "homepage": "https://one.geotech.one/docs/mcp/",
+  "repository": "https://github.com/Geodesic-Games/ONE_Codex",
+  "logo": "assets/geotech-one.png",
+  "skills": "./skills/",
+  "mcpServers": {
+    "one": {
+      "url": "https://one.geotech.one/api/mcp"
+    }
+  }
+}

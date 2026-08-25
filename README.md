@@ -1,70 +1,56 @@
-# ONE for Codex
+# ONE AI client integration
 
-This public repository distributes the ONE Codex plugin. The ONE server, data, authentication, and permission enforcement remain hosted by GeoTech; this repository contains only the installable plugin manifest, registered connector mapping, workflow skill, documentation, and plugin assets. Through the hosted connector, `get_brand_standards` exposes the authoritative GeoTech logos, exact palette, typography, patterns, Firebase-hosted source files, and usage guidance.
+This public repository packages ONE's hosted OAuth MCP integration for ChatGPT/Codex, Claude, Cursor, and OpenCode. The remote MCP server is the authoritative tool and authorization boundary. Each interactive user signs in to ONE; every tool call is filtered and authorized from that user's current ONE role, board grants, project grants, sharing state, and module access.
 
-The bundled skill covers guarded Procurement and project-planning workflows with read-before-write, optimistic revisions, idempotent retries, and exact destructive confirmations. Hiring is intentionally not an API, MCP, or plugin capability in the current scope and remains available only in ONE's reviewed UI.
+No API key, shell environment variable, local server, or private ONE application checkout is required for interactive use. Service keys remain a separate option for explicitly provisioned automation, CI, scheduled agents, and migrations.
 
-## Install from Codex desktop
+## Supported clients
 
-No terminal command or repository clone is required:
+| Client | Package surface | Connection behavior |
+|---|---|---|
+| ChatGPT and Codex | `.codex-plugin/plugin.json` plus required `.app.json` | Installs the registered ONE app and starts native per-user OAuth. |
+| Claude Desktop and Claude Code | `.claude-plugin/plugin.json` plus Claude marketplace | Loads one remote HTTP MCP connector and the shared ONE skill. |
+| Cursor | `.cursor-plugin/plugin.json` plus Cursor marketplace | Loads one remote MCP server and the shared ONE skill. |
+| OpenCode | `opencode.json` | Uses OpenCode's native remote MCP OAuth support and the shared ONE instructions. |
 
-1. Open **Plugins** in Codex desktop.
-2. Open **Create → Add plugin marketplace**.
-3. Enter Source `Geodesic-Games/ONE_Codex`.
-4. Enter Git ref `main`.
-5. Leave Sparse paths empty and select **Add marketplace**.
-6. Open **Personal → ONE** and install **ONE**.
-7. Select **Connect** on the ONE plugin card and complete the ONE sign-in window.
-8. Restart Codex desktop and start a new task.
+All four target the shared production endpoint `https://one.geotech.one/api/mcp`. Dedicated ONE deployments can use the same package guidance with their own HTTPS MCP resource and OAuth issuer.
 
-Optional CLI equivalent:
+## Install
 
-```powershell
-codex plugin marketplace add Geodesic-Games/ONE_Codex --ref main
-codex plugin add one@geotech-one
-codex plugin list
+Detailed client-specific instructions are in [plugins/one/README.md](plugins/one/README.md).
+
+For Codex desktop, add the marketplace `Geodesic-Games/ONE_Codex`, install `ONE`, and choose **Connect**. The registered app is required on install, so the client presents ONE's OAuth flow without asking for a credential.
+
+For Claude Code, add this repository as a marketplace and install the plugin:
+
+```text
+/plugin marketplace add Geodesic-Games/ONE_Codex
+/plugin install one@geotech-one
 ```
 
-### If Codex reports a different marketplace source
+For Cursor, load `plugins/one` as a local plugin while developing, or import the repository's Cursor marketplace after it has been approved for the intended organization. Cursor discovers OAuth from the MCP endpoint.
 
-The repository was renamed from `GeoCRM_Codex` to `ONE_Codex`. If Codex already registered the old URL under the stable `geotech-one` marketplace name, remove that local source registration before adding the renamed repository:
+For OpenCode, merge the `mcp.one` entry from [plugins/one/opencode.json](plugins/one/opencode.json) into the user's existing configuration, then authenticate `one` from OpenCode's MCP connection flow. Do not overwrite unrelated OpenCode settings.
 
-```powershell
-codex plugin marketplace remove geotech-one
-codex plugin marketplace add Geodesic-Games/ONE_Codex --ref main
-codex plugin add one@geotech-one
-```
+## Safety contract
 
-This does not delete ONE data, user access, or server-side OAuth grants. It only replaces the local marketplace source URL. If `geotech-one` already points to `ONE_Codex`, use `codex plugin marketplace upgrade geotech-one` instead.
+The shared skill resolves accessible boards and projects before mutation, confirms exact targets, uses fresh revisions and immutable import keys for tracker imports, and verifies results in ONE. It is organization-neutral and has no Calliope dependency. Brand guidance is loaded only when the user intentionally invokes the connected organization's ONE-published branding.
 
-The ONE plugin declares its registered **ONE** app connector as a required dependency, so installation starts the same first-class **Connect** flow used by connector-backed plugins such as Gmail. Selecting it opens ONE's OAuth page so each person can sign in with their own authorized Google account. Codex securely stores the rotating refresh credential and reuses the session across restarts and tasks until the person logs out, removes the plugin, or ONE disables the account.
-
-The user-facing connector name is owned by the registered ChatGPT app, not by the alias in `.app.json`. Keep that registered connection named **ONE** in [ChatGPT Plugins](https://chatgpt.com/plugins), and refresh its metadata after deploying MCP changes. A stale developer connection created as **ONE Test** must be renamed there when the interface offers editing, or replaced by a new **ONE** connection and its new `asdk_app_...` ID must be committed here.
-
-For a direct MCP connection without the plugin card or local files:
-
-```powershell
-codex mcp add one `
-  --url https://one.geotech.one/api/mcp `
-  --oauth-resource https://one.geotech.one/api/mcp
-codex mcp login one --scopes crm.read,crm.write
-```
-
-See [the complete plugin guide](plugins/one/README.md) or the [hosted installation guide](https://one.geotech.one/docs/codex-plugin/).
-
-For presentations, Complex Decisions, documents, charts, diagrams, product/UI design, or other visual GeoTech work, ask Codex to call `get_brand_standards` before it starts designing. The plugin skill treats the returned standard as authoritative, uses only its ONE/Firebase-hosted asset URLs, and prohibits redrawing or transforming the mark.
+ONE never accepts a tenant ID as a tool argument. Dedicated customer deployments derive tenant and issuer context from server configuration, and the server re-evaluates access on each request.
 
 ## Repository layout
 
 ```text
-.agents/plugins/marketplace.json  Public Codex marketplace catalog
-plugins/one/.codex-plugin/        Plugin manifest
-plugins/one/.app.json             Registered ONE app connector
-plugins/one/skills/               ONE workflow instructions
-plugins/one/assets/               ONE plugin branding
-tests/plugin-contract.test.mjs    Connector packaging regression test
+.agents/plugins/marketplace.json          OpenAI/Codex marketplace
+.claude-plugin/marketplace.json           Claude marketplace
+.cursor-plugin/marketplace.json           Cursor marketplace
+plugins/one/.app.json                     Registered OpenAI ONE app
+plugins/one/.codex-plugin/plugin.json     ChatGPT/Codex plugin
+plugins/one/.claude-plugin/plugin.json    Claude plugin
+plugins/one/.cursor-plugin/plugin.json    Cursor plugin
+plugins/one/opencode.json                 OpenCode remote MCP template
+plugins/one/skills/one/SKILL.md           Shared customer-facing workflow
+tests/plugin-contract.test.mjs            Cross-client package contract
 ```
 
-Run the package contract check with `node tests/plugin-contract.test.mjs`.
-
-The ONE application repository consumes this repository as a Git submodule so the public plugin package remains independently installable and versioned.
+Run `node tests/plugin-contract.test.mjs` before publishing a package change. Marketplace submission, production registration, and deployment are separate approval gates.

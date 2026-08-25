@@ -1,19 +1,19 @@
 ---
 name: one
-description: Use when the user wants to inspect or manage ONE boards, columns, items, comments, project planning, Procurement, Remote Machines, administration audits, private item files, Hardware assets and documents, People documents, Finance records and workflows, protected backups, retrieve GeoTech brand standards, or prepare presentations, Complex Decisions, documents, diagrams, charts, product design, or other visual work through the ONE plugin. The remote MCP server signs in each person with OAuth and enforces that person's current permissions.
+description: Use when the user wants to inspect or manage ONE boards, columns, items, comments, project planning, Procurement, Remote Machines, administration audits, private item files, Hardware assets and documents, People documents, Finance records and workflows, protected backups, or intentionally retrieve their organization's ONE-published branding. The remote MCP server signs in each person with OAuth and enforces that person's current permissions.
 ---
 
 # ONE
 
 Use the ONE app connector tools for ONE workspace and board work.
 
-## Brand standards
+## Organization-published brand standards
 
-- Before producing or substantially revising a presentation, Complex Decision brief, product or website design, UI, document, report, chart, diagram, campaign, email, social post, or other visual GeoTech work, call `get_brand_standards`.
+- When the user asks to apply the connected organization's branding to a presentation, Complex Decision brief, product or website design, UI, document, report, chart, diagram, campaign, email, social post, or other visual work, call `get_brand_standards`.
 - Treat the returned logos, colour values, typography, pattern, contrast, and clear-space rules as authoritative. Do not rely on remembered or copied values.
 - Use only the ONE/Firebase-hosted asset URLs returned by the standard. Never substitute or expose Google Drive, Google Docs, or other third-party source links for brand files.
-- Start from approved artwork or a published template. Never redraw, recolour, crop, stretch, distort, rotate, or rebuild the GeoTech mark or its lockups.
-- Apply `Outfit` to brand/display headings and `IBM Plex Sans` to body text, UI, labels, annotations, and tables unless the returned standard explicitly supersedes that guidance.
+- Start from the returned approved artwork or a published template. Never redraw, recolour, crop, stretch, distort, rotate, or rebuild the organization's mark or its lockups.
+- Apply only the typography and design rules returned by the connected organization's current standard.
 - Review the finished composition at its actual delivery size before sharing or publishing it.
 
 ## Start with access context
@@ -131,5 +131,5 @@ Use the ONE app connector tools for ONE workspace and board work.
 ## Security
 
 - Never request, display, store, or paste an API key for the remote plugin.
-- OAuth tokens are managed by Codex and ONE. Do not place them in prompts, source files, logs, or board fields.
+- OAuth credentials are managed by the connected AI client and ONE. Do not place them in prompts, source files, logs, or board fields.
 - A disabled ONE user or removed board grant takes effect on the next tool call, including calls made with an existing token.

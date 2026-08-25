@@ -12,12 +12,17 @@ const readJson = async (relativePath) =>
 
 const manifest = await readJson("plugins/one/.codex-plugin/plugin.json");
 const appConfig = await readJson("plugins/one/.app.json");
-const marketplace = await readJson(".agents/plugins/marketplace.json");
+const openAiMarketplace = await readJson(".agents/plugins/marketplace.json");
+const claudeManifest = await readJson("plugins/one/.claude-plugin/plugin.json");
+const claudeMarketplace = await readJson(".claude-plugin/marketplace.json");
+const cursorManifest = await readJson("plugins/one/.cursor-plugin/plugin.json");
+const cursorMarketplace = await readJson(".cursor-plugin/marketplace.json");
+const openCodeConfig = await readJson("plugins/one/opencode.json");
 const skill = await readFile(path.join(pluginRoot, "skills", "one", "SKILL.md"), "utf8");
 
 assert.equal(manifest.apps, "./.app.json");
 assert.equal("mcpServers" in manifest, false);
-assert.match(manifest.version, /^0\.4\.2\+codex\.\d{14}$/);
+assert.match(manifest.version, /^0\.5\.0\+cross-client\.\d{14}$/);
 assert.deepEqual(appConfig, {
   apps: {
     one: {
@@ -27,12 +32,15 @@ assert.deepEqual(appConfig, {
   },
 });
 
-const oneMarketplaceEntry = marketplace.plugins.find((plugin) => plugin.name === "one");
+const oneMarketplaceEntry = openAiMarketplace.plugins.find((plugin) => plugin.name === "one");
 assert.ok(oneMarketplaceEntry, "ONE must remain listed in the marketplace");
 assert.equal(oneMarketplaceEntry.policy?.authentication, "ON_INSTALL");
 assert.match(skill, /call `get_brand_standards`/);
 assert.match(skill, /presentation, Complex Decision brief/);
 assert.match(skill, /ONE\/Firebase-hosted asset URLs/);
+assert.match(skill, /organization's ONE-published branding/);
+assert.doesNotMatch(skill, /Calliope/);
+assert.doesNotMatch(skill, /GeoTech mark|Outfit|IBM Plex Sans/);
 assert.match(skill, /Call `get_signature_request` before every mutation/);
 assert.match(skill, /use `delete_signature_request`; a sent or delivered request must use `void_signature_request`/);
 assert.match(skill, /Before `send_signature_request`[\s\S]*obtain explicit user confirmation/);
@@ -95,6 +103,40 @@ assert.match(manifest.interface.capabilities.join("\n"), /Remote Machines/);
 assert.match(manifest.interface.capabilities.join("\n"), /Administration audit/);
 assert.match(manifest.interface.capabilities.join("\n"), /Procurement workflow/);
 assert.match(manifest.interface.capabilities.join("\n"), /Project planning/);
+
+const remoteServer = { type: "http", url: "https://one.geotech.one/api/mcp" };
+assert.equal(claudeManifest.name, "one");
+assert.deepEqual(claudeManifest.mcpServers, { one: remoteServer });
+assert.equal(claudeManifest.skills, "./skills/");
+assert.deepEqual(claudeMarketplace.plugins.map((plugin) => plugin.name), ["one"]);
+assert.equal(claudeMarketplace.plugins[0].source, "./plugins/one");
+
+assert.equal(cursorManifest.name, "one");
+assert.deepEqual(cursorManifest.mcpServers, { one: { url: remoteServer.url } });
+assert.equal(cursorManifest.skills, "./skills/");
+assert.deepEqual(cursorMarketplace.plugins.map((plugin) => plugin.name), ["one"]);
+assert.equal(cursorMarketplace.plugins[0].source, "plugins/one");
+
+assert.deepEqual(openCodeConfig, {
+  $schema: "https://opencode.ai/config.json",
+  mcp: {
+    one: {
+      type: "remote",
+      url: remoteServer.url,
+    },
+  },
+  instructions: ["./skills/one/SKILL.md"],
+});
+assert.equal(JSON.stringify(openCodeConfig).includes("headers"), false);
+assert.equal(JSON.stringify(openCodeConfig).includes("api_key"), false);
+
+const connectionCounts = {
+  openai: Object.keys(appConfig.apps).length,
+  claude: Object.keys(claudeManifest.mcpServers).length,
+  cursor: Object.keys(cursorManifest.mcpServers).length,
+  opencode: Object.keys(openCodeConfig.mcp).length,
+};
+assert.deepEqual(connectionCounts, { openai: 1, claude: 1, cursor: 1, opencode: 1 });
 
 await assert.rejects(
   access(path.join(pluginRoot, ".mcp.json"), fsConstants.F_OK),

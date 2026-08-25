@@ -1,0 +1,16 @@
+{
+  "name": "geotech-one",
+  "owner": {
+    "name": "GeoTech",
+    "email": "support@geotech.one"
+  },
+  "description": "The official ONE integration marketplace.",
+  "plugins": [
+    {
+      "name": "one",
+      "source": "./plugins/one",
+      "description": "Use ONE CRM and operational workspaces through a remote OAuth MCP connection.",
+      "category": "Business"
+    }
+  ]
+}
