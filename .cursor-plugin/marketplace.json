@@ -11,7 +11,7 @@
     {
       "name": "one",
       "source": "plugins/one",
-      "description": "Use ONE CRM and operational workspaces through a remote OAuth MCP connection.",
+      "description": "Use ONE operational workspaces through a remote OAuth MCP connection.",
       "category": "Productivity"
     }
   ]

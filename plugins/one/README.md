@@ -1,6 +1,6 @@
 # ONE plugin and remote MCP
 
-ONE is a hosted CRM and operational workspace exposed to compatible AI clients through a remote Streamable HTTP MCP server. Interactive users authenticate with OAuth; ONE applies their live permissions on every request. Do not configure an API key for a person using ChatGPT, Codex, Claude, Cursor, or OpenCode.
+ONE is a hosted operational workspace exposed to compatible AI clients through a remote Streamable HTTP MCP server. Interactive users authenticate with OAuth; ONE applies their live permissions on every request. Do not configure an API key for a person using ChatGPT, Codex, Claude, Cursor, or OpenCode.
 
 ## ChatGPT and Codex
 

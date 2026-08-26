@@ -1,7 +1,7 @@
 {
   "name": "one",
   "version": "0.5.0+cross-client.20260825133500",
-  "description": "Use ONE CRM and operational workspaces from ChatGPT or Codex with per-user OAuth and live permissions.",
+  "description": "Use ONE operational workspaces from ChatGPT or Codex with per-user OAuth and live permissions.",
   "author": {
     "name": "GeoTech",
     "email": "denys.dubinin@geotech.one",
@@ -22,8 +22,8 @@
   "apps": "./.app.json",
   "interface": {
     "displayName": "ONE",
-    "shortDescription": "Work with your ONE CRM and operations data.",
-    "longDescription": "Connect ChatGPT or Codex to ONE using your own account. ONE re-evaluates live role, board, project, sharing, and module permissions for every tool call across CRM records, project planning, Procurement, Remote Machines, Hardware, private documents, Finance, protected backups, and organization-published brand standards. Hiring remains ONE UI-only.",
+    "shortDescription": "Work with your ONE operations data.",
+    "longDescription": "Connect ChatGPT or Codex to ONE using your own account. ONE re-evaluates live role, board, project, sharing, and module permissions for every tool call across operational records, project planning, Procurement, Remote Machines, Hardware, private documents, Finance, protected backups, and organization-published brand standards. Hiring remains ONE UI-only.",
     "developerName": "GeoTech",
     "category": "Sales",
     "capabilities": [
