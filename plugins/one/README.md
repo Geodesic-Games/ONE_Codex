@@ -52,7 +52,19 @@ Users who do not need the workflow skill can instead add `https://one.geotech.on
 
 OpenCode's in-process plugin API is not needed for hosted ONE. Use the native remote MCP configuration in `opencode.json`; OAuth discovery, PKCE, refresh, and dynamic client registration are handled by OpenCode.
 
-Merge the `mcp.one` entry and, if this package is present locally, its `instructions` entry into the user's existing OpenCode configuration. Do not replace unrelated providers, agents, permissions, or MCP servers. Then authenticate from OpenCode or run `opencode mcp auth one`.
+Merge the `mcp.one` entry into the user's existing OpenCode configuration. Do not replace unrelated providers, agents, permissions, or MCP servers.
+
+To load the shared workflow, also add an `instructions` entry whose value is the absolute path to this checkout's skill. OpenCode resolves relative instruction paths from the destination configuration file, not from this template, so do not copy `./skills/one/SKILL.md` into a global or unrelated project configuration. For example, replace the placeholder below with the absolute path to the cloned `ONE_Codex` repository:
+
+```json
+{
+  "instructions": [
+    "/absolute/path/to/ONE_Codex/plugins/one/skills/one/SKILL.md"
+  ]
+}
+```
+
+After merging both entries, confirm that the instruction file exists at that exact path, then authenticate from OpenCode or run `opencode mcp auth one`.
 
 OpenCode must store its OAuth state outside the checked-in configuration. The ONE template deliberately contains no headers, API key, client secret, or fixed tenant identity.
 

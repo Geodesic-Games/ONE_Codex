@@ -56,6 +56,14 @@ Use the ONE app connector tools for ONE workspace and board work.
 5. Use `decide_task_automation_suggestion` only for the exact pending fingerprint returned in task context. Show the proposed source link before accept/reject. `undo_task_automation` restores only fields still owned by the last automation run; disclose skipped human-edited fields from the result and never imply a full rollback.
 6. Before `edit_project_task_comment` or `delete_project_task_comment`, resolve the exact comment from current task context and pass both current task and comment versions. Deletion requires the exact current text. Before `delete_project_task_attachment`, show the exact asset and pass its current name. Before `delete_project_task`, show the current title, explain that ONE keeps deletion audit metadata while removing managed task/comment attachments, obtain explicit confirmation, and pass the exact title and current task revision.
 
+## Reconciliation-safe Project Tracker imports
+
+1. Use `import_project_tasks` for strict task imports and `upsert_project_milestones` for strict milestone imports. First call `list_project_tasks` with `tracking_context: true` and use its fresh `project_revision`; never reuse that revision after any project write or conflict.
+2. Give every imported task and milestone a stable, immutable `import_key`. Reuse the same key only when retrying the exact same logical record; never change a key's payload or use a new key to bypass an import conflict.
+3. Project editors may import only `Backlog` tasks. Project managers and ONE owners or administrators may preserve historical task statuses. Do not retry a denied historical-status import through a different tool or credential.
+4. Treat each import as all-or-nothing: if ONE rejects any member of the batch, do not fall back to `create_project_tasks`, split the batch to evade validation, or apply a partial replacement. Correct the reported input or refresh the project context, then resubmit the intended batch.
+5. After a successful import, verify the returned tasks or milestones and re-read current project/task context before reporting completion or making another mutation.
+
 ## Procurement workflow
 
 1. Procurement MCP tools are available only to a signed-in person with the current Procurement module grant; API keys and alternate generic-board routes are not a fallback. Start with `list_procurement_requests`, then call `get_procurement_request` before every write and after every successful mutation.

@@ -19,6 +19,8 @@ const cursorManifest = await readJson("plugins/one/.cursor-plugin/plugin.json");
 const cursorMarketplace = await readJson(".cursor-plugin/marketplace.json");
 const openCodeConfig = await readJson("plugins/one/opencode.json");
 const skill = await readFile(path.join(pluginRoot, "skills", "one", "SKILL.md"), "utf8");
+const pluginReadme = await readFile(path.join(pluginRoot, "README.md"), "utf8");
+const workflow = await readFile(path.join(repositoryRoot, ".github", "workflows", "plugin-contract.yml"), "utf8");
 
 assert.equal(manifest.apps, "./.app.json");
 assert.equal("mcpServers" in manifest, false);
@@ -87,6 +89,12 @@ assert.match(skill, /Before `delete_procurement_request`, `delete_procurement_co
 assert.match(skill, /Use `list_task_project_boards`, `list_task_projects`, and `get_task_project`/);
 assert.match(skill, /Before `manage_project_sprint`[\s\S]*stable `idempotency_key`/);
 assert.match(skill, /Before `delete_project_task`[\s\S]*exact title and current task revision/);
+assert.match(skill, /Use `import_project_tasks` for strict task imports and `upsert_project_milestones` for strict milestone imports/);
+assert.match(skill, /`list_project_tasks` with `tracking_context: true`[\s\S]*fresh `project_revision`/);
+assert.match(skill, /stable, immutable `import_key`[\s\S]*exact same logical record/);
+assert.match(skill, /Project editors may import only `Backlog` tasks[\s\S]*Project managers and ONE owners or administrators may preserve historical task statuses/);
+assert.match(skill, /all-or-nothing[\s\S]*do not fall back to `create_project_tasks`[\s\S]*partial replacement/);
+assert.match(skill, /After a successful import[\s\S]*re-read current project\/task context/);
 assert.match(skill, /Hiring intentionally remains a ONE UI-only capability/);
 assert.match(skill, /There are no Hiring API, MCP, or ONE Codex plugin operations/);
 assert.match(skill, /Do not use generic board\/item, People-document, file, search, or database tools[\s\S]*candidates/);
@@ -125,10 +133,17 @@ assert.deepEqual(openCodeConfig, {
       url: remoteServer.url,
     },
   },
-  instructions: ["./skills/one/SKILL.md"],
 });
 assert.equal(JSON.stringify(openCodeConfig).includes("headers"), false);
 assert.equal(JSON.stringify(openCodeConfig).includes("api_key"), false);
+assert.equal("instructions" in openCodeConfig, false, "the merge template must not contain a destination-relative instruction path");
+assert.match(pluginReadme, /OpenCode resolves relative instruction paths from the destination configuration file/);
+assert.match(pluginReadme, /\/absolute\/path\/to\/ONE_Codex\/plugins\/one\/skills\/one\/SKILL\.md/);
+assert.match(pluginReadme, /confirm that the instruction file exists at that exact path/);
+assert.match(pluginReadme, /do not copy `\.\/skills\/one\/SKILL\.md` into a global or unrelated project configuration/);
+
+assert.match(workflow, /node --test tests\/plugin-contract\.test\.mjs/);
+assert.match(workflow, /permissions:\s*\n\s*contents: read/);
 
 const connectionCounts = {
   openai: Object.keys(appConfig.apps).length,

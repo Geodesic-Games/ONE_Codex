@@ -5,8 +5,5 @@
       "type": "remote",
       "url": "https://one.geotech.one/api/mcp"
     }
-  },
-  "instructions": [
-    "./skills/one/SKILL.md"
-  ]
+  }
 }
