@@ -34,7 +34,7 @@ For Claude Code:
 /plugin install one@geotech-one
 ```
 
-For Claude Desktop, install the same plugin when custom plugin upload is available, or add `https://one.geotech.one/api/mcp` as a custom web connector in **Customize → Connectors**. On Team or Enterprise, an organization owner may need to add the connector before members individually connect. Complete OAuth with the user's own ONE account.
+For Claude Desktop, install the same plugin when custom plugin upload is available. Adding `https://one.geotech.one/api/mcp` as a custom web connector in **Customize → Connectors** loads only the MCP connection; it does not load the shared workflow skill or its safeguards. Use that fallback only when those workflow safeguards are not needed. On Team or Enterprise, an organization owner may need to add the connector before members individually connect. Complete OAuth with the user's own ONE account.
 
 ## Cursor
 

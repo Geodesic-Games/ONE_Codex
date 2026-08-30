@@ -141,6 +141,8 @@ assert.match(pluginReadme, /OpenCode resolves relative instruction paths from th
 assert.match(pluginReadme, /\/absolute\/path\/to\/ONE_Codex\/plugins\/one\/skills\/one\/SKILL\.md/);
 assert.match(pluginReadme, /confirm that the instruction file exists at that exact path/);
 assert.match(pluginReadme, /do not copy `\.\/skills\/one\/SKILL\.md` into a global or unrelated project configuration/);
+assert.match(pluginReadme, /custom web connector[\s\S]*loads only the MCP connection; it does not load the shared workflow skill or its safeguards/);
+assert.match(pluginReadme, /Use that fallback only when those workflow safeguards are not needed/);
 
 assert.match(workflow, /node --test tests\/plugin-contract\.test\.mjs/);
 assert.match(workflow, /permissions:\s*\n\s*contents: read/);
