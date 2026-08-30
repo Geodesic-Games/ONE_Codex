@@ -1,13 +1,13 @@
 {
   "name": "one",
-  "version": "0.4.2+codex.20260824154732",
-  "description": "Use ONE boards, operational workspaces, and authoritative GeoTech brand standards from Codex with per-user OAuth and live permissions.",
+  "version": "0.5.0+cross-client.20260825133500",
+  "description": "Use ONE operational workspaces from ChatGPT or Codex with per-user OAuth and live permissions.",
   "author": {
     "name": "GeoTech",
     "email": "denys.dubinin@geotech.one",
     "url": "https://geotech.one"
   },
-  "homepage": "https://one.geotech.one/docs/codex-plugin/",
+  "homepage": "https://one.geotech.one/docs/mcp/",
   "repository": "https://github.com/Geodesic-Games/ONE_Codex",
   "license": "UNLICENSED",
   "keywords": [
@@ -22,8 +22,8 @@
   "apps": "./.app.json",
   "interface": {
     "displayName": "ONE",
-    "shortDescription": "Work with ONE and GeoTech brand standards.",
-    "longDescription": "Connect Codex to ONE using your Google account. ONE applies live permissions for every board, project-planning, Procurement, Remote Machine, redacted administration audit, Hardware asset, private document, Finance, protected backup, and brand-standard tool call, including owner-only sensitive backup export and explicit People-document access. Hiring remains ONE UI-only.",
+    "shortDescription": "Work with your ONE operations data.",
+    "longDescription": "Connect ChatGPT or Codex to ONE using your own account. ONE re-evaluates live role, board, project, sharing, and module permissions for every tool call across operational records, project planning, Procurement, Remote Machines, Hardware, private documents, Finance, protected backups, and organization-published brand standards. Hiring remains ONE UI-only.",
     "developerName": "GeoTech",
     "category": "Sales",
     "capabilities": [
@@ -44,7 +44,7 @@
     "termsOfServiceURL": "https://one.geotech.one/terms",
     "defaultPrompt": [
       "List the ONE boards I can access.",
-      "Get the GeoTech brand standards before designing a presentation.",
+      "Get my organization's ONE-published brand standards before designing a presentation.",
       "Find recent contacts in ONE matching a company name.",
       "Create an item in ONE after confirming the board and fields.",
       "List Hardware assets and their private documents that I can access.",

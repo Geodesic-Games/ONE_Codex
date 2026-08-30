@@ -1,165 +1,92 @@
-# ONE plugin for Codex
+# ONE plugin and remote MCP
 
-The ONE plugin gives Codex a secure, per-person connection to ONE boards and operational workspaces. It uses the hosted MCP endpoint at `https://one.geotech.one/api/mcp` and signs each user in through ONE's Google/Firebase login. No shared API key, repository checkout, or local server is required. The Firebase Hosting endpoint at `https://geotech-crm.web.app/api/mcp` remains a permanent fallback.
+ONE is a hosted operational workspace exposed to compatible AI clients through a remote Streamable HTTP MCP server. Interactive users authenticate with OAuth; ONE applies their live permissions on every request. Do not configure an API key for a person using ChatGPT, Codex, Claude, Cursor, or OpenCode.
 
-The connector also exposes `get_brand_standards`, the authoritative agent-readable GeoTech brand system. Call it before presentations, Complex Decisions, documents, reports, charts, diagrams, product/UI design, campaigns, or other visual work so approved Firebase-hosted source artwork, exact colours, Outfit/IBM Plex Sans typography, patterns, contrast, and clear-space rules are applied consistently.
+## ChatGPT and Codex
 
-## Choose an installation
+The OpenAI package uses `.codex-plugin/plugin.json` and a single required registered app in `.app.json`. It intentionally does not include `.mcp.json`, because a second raw MCP declaration would compete with the native app connection.
 
-### Option A — direct MCP connection
+In Codex desktop:
 
-Use this when you need ONE tools in Codex and do not need a Plugins-directory card. No files are downloaded from this repository.
+1. Open **Plugins → Create → Add plugin marketplace**.
+2. Add `Geodesic-Games/ONE_Codex` from `main`.
+3. Install **ONE** from the `geotech-one` marketplace.
+4. Select **Connect**, complete ONE sign-in, restart Codex, and start a new task.
 
-In Codex desktop, open **Settings → MCP servers → Add server**, choose **Streamable HTTP**, enter `ONE` and `https://one.geotech.one/api/mcp`, save, restart, and select **Authenticate**.
+CLI marketplace installation is equivalent:
 
-Or run:
-
-```powershell
-codex mcp add one `
-  --url https://one.geotech.one/api/mcp `
-  --oauth-resource https://one.geotech.one/api/mcp
-
-codex mcp login one --scopes crm.read,crm.write
-codex mcp list
-```
-
-### Option B — full ONE plugin
-
-Use this for the branded Plugins-directory card, starter prompts, and the bundled ONE workflow skill. Codex fetches only this small public marketplace repository; you do not clone the private ONE application.
-
-#### Install with the Codex desktop interface
-
-No terminal command is required. Register and install the public Git marketplace directly in Codex desktop:
-
-1. Open **Plugins**.
-2. Open **Create → Add plugin marketplace** in the upper-right corner.
-3. Enter Source `Geodesic-Games/ONE_Codex`.
-4. Enter Git ref `main`.
-5. Leave Sparse paths empty. This ensures Codex receives both the marketplace catalog and plugin folder.
-6. Select **Add marketplace**.
-7. If necessary, select refresh, then open **Personal → ONE**.
-8. Open **ONE** and select the plus or **Install** button.
-9. Select **Connect** on the ONE plugin card and complete the ONE sign-in window using the Google account registered in ONE.
-10. Confirm its blue icon appears in the **Installed** row, restart Codex desktop, and start a new task.
-
-#### Optional CLI alternative
-
-```powershell
+```text
 codex plugin marketplace add Geodesic-Games/ONE_Codex --ref main
 codex plugin add one@geotech-one
 codex plugin list
 ```
 
-The three commands above are the supported sequence: register the Git marketplace, install `one` from the `geotech-one` marketplace, then verify the installation. Complete the browser sign-in, restart Codex desktop, and start a new task after either installation method.
+For development or a dedicated deployment, a direct MCP entry can be added in Codex settings with its own HTTPS resource URL. Use OAuth discovery; do not add a bearer-token environment variable for an interactive user.
 
-#### Fix an old marketplace source
+## Claude Desktop and Claude Code
 
-If Codex says marketplace `geotech-one` is already added from a different source, it still has the retired `GeoCRM_Codex` repository URL registered. Replace only that local marketplace registration, then install ONE:
+The Claude manifest includes one inline remote HTTP MCP server plus the shared skill. It does not build an MCPB desktop extension because hosted ONE does not need local filesystem, process, or device access.
 
-```powershell
-codex plugin marketplace remove geotech-one
-codex plugin marketplace add Geodesic-Games/ONE_Codex --ref main
-codex plugin add one@geotech-one
-codex plugin list
+For Claude Code:
+
+```text
+/plugin marketplace add Geodesic-Games/ONE_Codex
+/plugin install one@geotech-one
 ```
 
-This keeps the stable `one@geotech-one` identity and does not delete ONE workspace data, permissions, or server-side OAuth grants. When the configured source is already `ONE_Codex`, refresh it with `codex plugin marketplace upgrade geotech-one` instead of removing it.
+For Claude Desktop, install the same plugin when custom plugin upload is available. Adding `https://one.geotech.one/api/mcp` as a custom web connector in **Customize → Connectors** loads only the MCP connection; it does not load the shared workflow skill or its safeguards. Use that fallback only when those workflow safeguards are not needed. On Team or Enterprise, an organization owner may need to add the connector before members individually connect. Complete OAuth with the user's own ONE account.
 
-## Prepare ONE access
+## Cursor
 
-An owner or administrator should:
+The Cursor manifest includes one inline remote MCP server and the shared skill. While developing, symlink or copy `plugins/one` into Cursor's local plugin directory and reload the window:
 
-1. Open [ONE](https://one.geotech.one/) and choose **Admin menu**.
-2. Open the person's account and select the **ONE workspace** access type.
-3. Assign an existing permission group, or select individual boards and BackOffice sections directly.
-4. Choose **View only** or **Can edit** for every direct assignment.
-
-If a person receives overlapping grants, edit access wins for boards included by both. Existing direct assignments without an explicit level remain edit-capable for compatibility; new direct assignments default to view-only.
-
-## Sign in and use it
-
-Ask Codex:
-
-> List the ONE boards I can access.
-
-The ONE plugin card shows a first-class **Connect** control because the plugin declares the registered **ONE** app connector as required. Installation should open that authorization flow immediately. Select **Connect**, sign in with the Google account registered in ONE, review the requested scopes, and choose **Authorize ONE**. Codex stores the rotating refresh credential and reuses the connection across app restarts and new tasks. You sign in again only after logging out, removing the plugin, revoking the connection, or having the ONE account disabled.
-
-The connector's user-facing name comes from its registered ChatGPT app record. Keep that connection named **ONE** in [ChatGPT Plugins](https://chatgpt.com/plugins) and refresh it after MCP metadata changes; changing the local `.app.json` alias does not rename an existing developer connection.
-
-ONE checks the user's current account status and board grants on every MCP request. Removing a group, changing it to view-only, removing a board, or disabling the user takes effect without issuing a new plugin credential.
-
-Access levels:
-
-- **View only** — list, search, and inspect permitted boards.
-- **Can edit** — all view actions plus create, update, comment, move, and confirmed soft-delete actions.
-- **Owner** — all non-owner-only ONE boards with edit access.
-
-Useful requests:
-
-- `Get the GeoTech brand standards before designing this presentation.`
-- `List my ONE boards and show whether each is view-only or editable.`
-- `Search Contacts for people connected to Acme.`
-- `Show the Deals schema before creating anything.`
-- `Preview moving these Production items to Review without applying it.`
-- `Add this meeting note to the selected contact.`
-- `List the Hardware assets I can access and show their current custodians.`
-- `Move this asset to the Amsterdam office after showing me its current revision and history.`
-- `List my permitted People documents without exposing storage links.`
-- `List recent ONE backups and show their protected-root coverage without exporting the data.`
-- `As the signed-in owner, export this backup and report its SHA-256 checksum.`
-- `List Remote Machines and show current availability and bookings.`
-- `As a ONE administrator, audit users, grants, invitations, and API-key metadata without exposing secrets.`
-- `Create this Procurement request with the ordered approvers, then show me the saved approval state.`
-- `Show this project's statuses and sprints before proposing the requested planning change.`
-
-Deleting an item requires the exact current item name as confirmation and uses ONE's existing soft-delete audit path.
-Hardware lifecycle uses the person's Hardware module grant. People document tools require the separate sensitive
-**People Documents** view/edit grant; ordinary People or board access does not reveal those files.
-Backup inventory and metadata are read-only. Complete export is available only to a signed-in ONE owner and carries
-sensitive operational JSON; API keys cannot export. Import, restore, deletion, retention settings, and automatic-backup
-settings remain in ONE's reviewed Backups panel and are intentionally not plugin tools.
-Remote Machine color/archive and the administration audit require a signed-in ONE owner or administrator; API keys are
-not accepted. Archive requires the exact current machine name, resolves aliases on the server, clears live runtime and
-bookings, and does not uninstall OneClient. The audit is read-only and omits hashes, reusable secrets, bridge settings,
-connector tokens, and credentials. Permission, invitation, key, bridge, retention, and client-lifecycle mutations remain
-reviewed ONE workflows and are intentionally not plugin tools.
-Procurement is a person-bound workflow: Codex reads the current request before each change, passes its fresh version,
-uses stable idempotency keys for retryable writes, and requires exact confirmation before destructive actions. Project
-planning follows the same revision discipline for source control, statuses, sprints, automation decisions, comments,
-attachments, and task deletion.
-
-Hiring remains available only in ONE's reviewed UI. It has no API, MCP, or ONE Codex plugin operations in the current
-scope, and the plugin must not approximate Hiring through generic board, item, file, search, or People-document tools.
-
-## Update or remove
-
-Update the public plugin marketplace and reinstall the current package:
-
-```powershell
-codex plugin marketplace upgrade geotech-one
-codex plugin add one@geotech-one
+```text
+~/.cursor/plugins/local/one
 ```
 
-Remove the plugin:
+The repository also contains `.cursor-plugin/marketplace.json` for a future reviewed Cursor marketplace or an organization-managed marketplace. Installing the plugin should present Cursor's MCP OAuth flow. No plugin variable or secret is required.
 
-```powershell
-codex plugin remove one@geotech-one
+Users who do not need the workflow skill can instead add `https://one.geotech.one/api/mcp` as a remote server in Cursor's MCP settings. Do not install both forms at once, because that would duplicate the ONE connection.
+
+## OpenCode
+
+OpenCode's in-process plugin API is not needed for hosted ONE. Use the native remote MCP configuration in `opencode.json`; OAuth discovery, PKCE, refresh, and dynamic client registration are handled by OpenCode.
+
+Merge the `mcp.one` entry into the user's existing OpenCode configuration. Do not replace unrelated providers, agents, permissions, or MCP servers.
+
+To load the shared workflow, also add an `instructions` entry whose value is the absolute path to this checkout's skill. OpenCode resolves relative instruction paths from the destination configuration file, not from this template, so do not copy `./skills/one/SKILL.md` into a global or unrelated project configuration. For example, replace the placeholder below with the absolute path to the cloned `ONE_Codex` repository:
+
+```json
+{
+  "instructions": [
+    "/absolute/path/to/ONE_Codex/plugins/one/skills/one/SKILL.md"
+  ]
+}
 ```
 
-Remove a direct MCP connection:
+After merging both entries, confirm that the instruction file exists at that exact path, then authenticate from OpenCode or run `opencode mcp auth one`.
 
-```powershell
-codex mcp logout one
-codex mcp remove one
-```
+OpenCode must store its OAuth state outside the checked-in configuration. The ONE template deliberately contains no headers, API key, client secret, or fixed tenant identity.
 
-Removing the local connection does not change ONE user access. A ONE administrator can revoke server access immediately by disabling the account or removing its board grants.
+## Shared workflow
 
-## Security notes
+Across clients:
 
-- OAuth uses authorization code flow with PKCE, short-lived access tokens, and persistent rotating refresh tokens.
-- The plugin never receives a Google password or a reusable Firebase credential.
-- ONE enforces the signed-in person's live board viewer/editor grants on every tool call.
-- The local stdio MCP remains available only in the private ONE application repository for specialized developer/API-key workflows.
+1. Discover the boards and projects the signed-in person can currently access.
+2. Read the exact target and its current revision before a write.
+3. For reconciliation-safe tracker work, use `import_project_tasks` and `upsert_project_milestones` with immutable import keys.
+4. Project editors may import Backlog tasks only. Project managers and ONE owner/admin users may preserve historical statuses.
+5. Verify the resulting tasks and milestones in ONE after the mutation.
+6. Disconnect a client from ONE's **Connected apps** control when access is no longer needed.
 
-Public installation guide: <https://one.geotech.one/docs/codex-plugin/>
+The generic `create_project_tasks` tool remains available for ordinary Backlog task creation. The strict import tool is separate so integrations cannot silently opt into historical-status authority.
+
+The shared skill is customer-neutral and independent of GeoTech's internal Calliope plugin. If a user intentionally requests branded work, call `get_brand_standards` and follow the branding published by that customer's ONE deployment.
+
+## Dedicated ONE deployments
+
+Replace the shared endpoint with the customer's own public HTTPS MCP resource. That server must publish its own protected-resource metadata and OAuth issuer. The client package must never accept tenant identity through tool arguments or hardcode a customer database identifier.
+
+## Service automation
+
+API keys remain appropriate only for unattended services, CI, scheduled jobs, or controlled migrations. Strict service imports require explicit scopes and an exact non-empty project allowlist. Never place a service secret in this package, a prompt, a screenshot, source control, or client marketplace metadata.

@@ -1,19 +1,19 @@
 ---
 name: one
-description: Use when the user wants to inspect or manage ONE boards, columns, items, comments, project planning, Procurement, Remote Machines, administration audits, private item files, Hardware assets and documents, People documents, Finance records and workflows, protected backups, retrieve GeoTech brand standards, or prepare presentations, Complex Decisions, documents, diagrams, charts, product design, or other visual work through the ONE plugin. The remote MCP server signs in each person with OAuth and enforces that person's current permissions.
+description: Use when the user wants to inspect or manage ONE boards, columns, items, comments, project planning, Procurement, Remote Machines, administration audits, private item files, Hardware assets and documents, People documents, Finance records and workflows, protected backups, or intentionally retrieve their organization's ONE-published branding. The remote MCP server signs in each person with OAuth and enforces that person's current permissions.
 ---
 
 # ONE
 
 Use the ONE app connector tools for ONE workspace and board work.
 
-## Brand standards
+## Organization-published brand standards
 
-- Before producing or substantially revising a presentation, Complex Decision brief, product or website design, UI, document, report, chart, diagram, campaign, email, social post, or other visual GeoTech work, call `get_brand_standards`.
+- When the user asks to apply the connected organization's branding to a presentation, Complex Decision brief, product or website design, UI, document, report, chart, diagram, campaign, email, social post, or other visual work, call `get_brand_standards`.
 - Treat the returned logos, colour values, typography, pattern, contrast, and clear-space rules as authoritative. Do not rely on remembered or copied values.
 - Use only the ONE/Firebase-hosted asset URLs returned by the standard. Never substitute or expose Google Drive, Google Docs, or other third-party source links for brand files.
-- Start from approved artwork or a published template. Never redraw, recolour, crop, stretch, distort, rotate, or rebuild the GeoTech mark or its lockups.
-- Apply `Outfit` to brand/display headings and `IBM Plex Sans` to body text, UI, labels, annotations, and tables unless the returned standard explicitly supersedes that guidance.
+- Start from the returned approved artwork or a published template. Never redraw, recolour, crop, stretch, distort, rotate, or rebuild the organization's mark or its lockups.
+- Apply only the typography and design rules returned by the connected organization's current standard.
 - Review the finished composition at its actual delivery size before sharing or publishing it.
 
 ## Start with access context
@@ -55,6 +55,14 @@ Use the ONE app connector tools for ONE workspace and board work.
 4. Before `manage_project_sprint`, show the sprint dates, active-sprint change, overlap shift, and destination for unfinished tasks. Use a stable `idempotency_key` when creating a sprint. Finish or delete requires the exact sprint name through `confirm_name`; re-read the project after every action.
 5. Use `decide_task_automation_suggestion` only for the exact pending fingerprint returned in task context. Show the proposed source link before accept/reject. `undo_task_automation` restores only fields still owned by the last automation run; disclose skipped human-edited fields from the result and never imply a full rollback.
 6. Before `edit_project_task_comment` or `delete_project_task_comment`, resolve the exact comment from current task context and pass both current task and comment versions. Deletion requires the exact current text. Before `delete_project_task_attachment`, show the exact asset and pass its current name. Before `delete_project_task`, show the current title, explain that ONE keeps deletion audit metadata while removing managed task/comment attachments, obtain explicit confirmation, and pass the exact title and current task revision.
+
+## Reconciliation-safe Project Tracker imports
+
+1. Use `import_project_tasks` for strict task imports and `upsert_project_milestones` for strict milestone imports. First call `list_project_tasks` with `tracking_context: true` and use its fresh `project_revision`; never reuse that revision after any project write or conflict.
+2. Give every imported task and milestone a stable, immutable `import_key`. Reuse the same key only when retrying the exact same logical record; never change a key's payload or use a new key to bypass an import conflict.
+3. Project editors may import only `Backlog` tasks. Project managers and ONE owners or administrators may preserve historical task statuses. Do not retry a denied historical-status import through a different tool or credential.
+4. Treat each import as all-or-nothing: if ONE rejects any member of the batch, do not fall back to `create_project_tasks`, split the batch to evade validation, or apply a partial replacement. Correct the reported input or refresh the project context, then resubmit the intended batch.
+5. After a successful import, verify the returned tasks or milestones and re-read current project/task context before reporting completion or making another mutation.
 
 ## Procurement workflow
 
@@ -131,5 +139,5 @@ Use the ONE app connector tools for ONE workspace and board work.
 ## Security
 
 - Never request, display, store, or paste an API key for the remote plugin.
-- OAuth tokens are managed by Codex and ONE. Do not place them in prompts, source files, logs, or board fields.
+- OAuth credentials are managed by the connected AI client and ONE. Do not place them in prompts, source files, logs, or board fields.
 - A disabled ONE user or removed board grant takes effect on the next tool call, including calls made with an existing token.
