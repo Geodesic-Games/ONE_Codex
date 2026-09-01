@@ -1,0 +1,11 @@
+{
+  "mcpServers": {
+    "one-api-key": {
+      "type": "http",
+      "url": "https://one.geotech.one/api/mcp",
+      "headers": {
+        "Authorization": "Bearer ${ONE_MCP_API_KEY}"
+      }
+    }
+  }
+}

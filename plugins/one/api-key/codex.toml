@@ -1,0 +1,3 @@
+[mcp_servers.one_api_key]
+url = "https://one.geotech.one/api/mcp"
+bearer_token_env_var = "ONE_MCP_API_KEY"

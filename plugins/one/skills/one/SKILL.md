@@ -1,6 +1,6 @@
 ---
 name: one
-description: Use when the user wants to inspect or manage ONE boards, columns, items, comments, project planning, Procurement, Remote Machines, administration audits, private item files, Hardware assets and documents, People documents, Finance records and workflows, protected backups, or intentionally retrieve their organization's ONE-published branding. The remote MCP server signs in each person with OAuth and enforces that person's current permissions.
+description: Use when the user wants to inspect or manage ONE boards, columns, items, comments, project planning, Procurement, Remote Machines, administration audits, private item files, Hardware assets and documents, People documents, Finance records and workflows, protected backups, or intentionally retrieve their organization's ONE-published branding. The remote MCP server enforces the connected person's current permissions through OAuth or a time-limited Member MCP key.
 ---
 
 # ONE
@@ -60,13 +60,13 @@ Use the ONE app connector tools for ONE workspace and board work.
 
 1. Use `import_project_tasks` for strict task imports and `upsert_project_milestones` for strict milestone imports. First call `list_project_tasks` with `tracking_context: true` and use its fresh `project_revision`; never reuse that revision after any project write or conflict.
 2. Give every imported task and milestone a stable, immutable `import_key`. Reuse the same key only when retrying the exact same logical record; never change a key's payload or use a new key to bypass an import conflict.
-3. Project editors may import only `Backlog` tasks. Project managers and ONE owners or administrators may preserve historical task statuses. Do not retry a denied historical-status import through a different tool or credential.
+3. Project editors, project managers, and ONE owners or administrators may import any task status currently configured on the project. If a status was renamed or removed, refresh the project revision and reconcile the input; never substitute an unconfigured status.
 4. Treat each import as all-or-nothing: if ONE rejects any member of the batch, do not fall back to `create_project_tasks`, split the batch to evade validation, or apply a partial replacement. Correct the reported input or refresh the project context, then resubmit the intended batch.
 5. After a successful import, verify the returned tasks or milestones and re-read current project/task context before reporting completion or making another mutation.
 
 ## Procurement workflow
 
-1. Procurement MCP tools are available only to a signed-in person with the current Procurement module grant; API keys and alternate generic-board routes are not a fallback. Start with `list_procurement_requests`, then call `get_procurement_request` before every write and after every successful mutation.
+1. Procurement MCP tools require the current person's Procurement module grant through OAuth or a Member MCP key; service keys and alternate generic-board routes are not a fallback. Start with `list_procurement_requests`, then call `get_procurement_request` before every write and after every successful mutation.
 2. Use `create_procurement_request` only from explicit budget, currency, purpose, ordered approver, and—when Hardware—equipment/destination facts. Use a stable `idempotency_key` so an uncertain retry cannot duplicate the request or notifications. Only an owner or administrator may use `create_procurement_category`.
 3. Pass the exact current request `updated_at` to every guarded write. `update_procurement_request` replaces editable details and resets the approval chain; show that consequence before applying it. Re-read before adding approvers, comments, decisions, lifecycle changes, or attachments.
 4. Use a stable `idempotency_key` for `add_procurement_comment`, `decide_procurement_request`, and `upload_procurement_attachment`. Only the current approver may decide. Show the requested decision and note before calling it; do not infer approval from a message that merely asks for a summary or recommendation.
@@ -107,12 +107,12 @@ Use the ONE app connector tools for ONE workspace and board work.
 
 ## Hardware and People documents workflow
 
-1. Hardware asset and document tools require a signed-in person with the Hardware module grant. Start with `list_hardware_inventory`; use `get_hardware_asset` to resolve exact identity, current custodian, status, history, and revision before `update_hardware_asset`, `move_hardware_asset`, or `archive_hardware_asset`. A viewer is read-only; never retry a denied write through a generic board tool or alternate credential.
+1. Hardware asset and document tools require the current person's Hardware module grant through OAuth or a Member MCP key. Start with `list_hardware_inventory`; use `get_hardware_asset` to resolve exact identity, current custodian, status, history, and revision before `update_hardware_asset`, `move_hardware_asset`, or `archive_hardware_asset`. A viewer is read-only; never retry a denied write through a generic board tool or alternate credential.
 2. Use `create_hardware_asset` only from explicit asset facts. Preserve serial number, purchase/cost provenance, procurement linkage, quantity, and the requested initial person, office, or unassigned custodian. Re-read the created asset before another mutation.
 3. Before `update_hardware_asset`, show the intended non-custody changes and pass the exact current `expected_revision`. Use `move_hardware_asset` for custody changes: show the current and destination custodian, pass the current revision, and reuse one stable `idempotency_key` after an uncertain retry. Re-read after a move.
 4. Before `archive_hardware_asset`, explain that custody will be released while the asset and movement history remain auditable. Obtain explicit confirmation and pass the current revision plus the exact asset ID through `confirm_asset_id`.
 5. Use `list_hardware_documents` before `get_hardware_document` or deletion. Treat the returned protected MCP resource, filename, media type, size, SHA-256 checksum, and revision as authoritative; never request or expose a Storage path or download token. Upload only supported PDF/image content. Before `delete_hardware_document`, re-list, show the exact file, obtain confirmation, and pass its current revision and exact name.
-6. People documents are more sensitive than general People or board data. `list_people_documents`, `get_people_document`, `upload_people_document`, and `delete_people_document` require person OAuth plus the separate **People Documents** module grant; a generic People, board, Hardware, or service-key grant is insufficient. Report a denial as a permission boundary and do not search other tools for the file.
+6. People documents are more sensitive than general People or board data. `list_people_documents`, `get_people_document`, `upload_people_document`, and `delete_people_document` require the current person through OAuth or a Member MCP key plus the separate **People Documents** module grant; a generic People, board, Hardware, or service-key grant is insufficient. Report a denial as a permission boundary and do not search other tools for the file.
 7. Select `owner_type: person` for one People item and provide its exact board, item, document-column, and optional folder IDs. Select `owner_type: company` only for the People board's company-link folders. List first to resolve folder and document IDs, and never infer that a company-link file belongs to a person.
 8. Treat People list results as safe metadata only. Use `get_people_document` for protected content and never ask for a URL, file ID, Storage object, or Firebase token. Upload atomically with a declared filename, media type, folder, and bounded base64 bytes. Before `delete_people_document`, re-list, show the exact file, obtain confirmation, and pass its current revision and exact name.
 
@@ -138,6 +138,6 @@ Use the ONE app connector tools for ONE workspace and board work.
 
 ## Security
 
-- Never request, display, store, or paste an API key for the remote plugin.
+- Never request, display, or paste a Member MCP key in a prompt. If the direct fallback is active, the desktop client must read it only from `ONE_MCP_API_KEY` and the user must manage it through ONE's one-time reveal and revocation workflow.
 - OAuth credentials are managed by the connected AI client and ONE. Do not place them in prompts, source files, logs, or board fields.
-- A disabled ONE user or removed board grant takes effect on the next tool call, including calls made with an existing token.
+- A disabled ONE user or removed board grant takes effect on the next tool call, including calls made with an existing OAuth token or Member MCP key.
