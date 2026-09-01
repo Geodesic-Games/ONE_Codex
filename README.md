@@ -1,8 +1,8 @@
 # ONE AI client integration
 
-This public repository packages ONE's hosted OAuth MCP integration for ChatGPT/Codex, Claude, Cursor, and OpenCode. The remote MCP server is the authoritative tool and authorization boundary. Each interactive user signs in to ONE; every tool call is filtered and authorized from that user's current ONE role, board grants, project grants, sharing state, and module access.
+This public repository packages ONE's hosted OAuth MCP integration for ChatGPT/Codex, Claude, Cursor, and OpenCode. The remote MCP server is the authoritative tool and authorization boundary. Each interactive connection is filtered and authorized from the person's current ONE role, board grants, project grants, sharing state, and module access.
 
-No API key, shell environment variable, local server, or private ONE application checkout is required for interactive use. Service keys remain a separate option for explicitly provisioned automation, CI, scheduled agents, and migrations.
+OAuth remains the preferred interactive connection. While public app approval is pending, Codex, Claude, Cursor, and OpenCode can instead use a 90-day Member MCP key through the separate templates under `plugins/one/api-key/`. ChatGPT web cannot load this direct fallback. Service keys remain a separate option for explicitly provisioned automation, CI, scheduled agents, and migrations.
 
 ## Supported clients
 

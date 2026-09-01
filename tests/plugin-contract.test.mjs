@@ -21,6 +21,10 @@ const openCodeConfig = await readJson("plugins/one/opencode.json");
 const skill = await readFile(path.join(pluginRoot, "skills", "one", "SKILL.md"), "utf8");
 const pluginReadme = await readFile(path.join(pluginRoot, "README.md"), "utf8");
 const workflow = await readFile(path.join(repositoryRoot, ".github", "workflows", "plugin-contract.yml"), "utf8");
+const codexApiKey = await readFile(path.join(pluginRoot, "api-key", "codex.toml"), "utf8");
+const claudeApiKey = await readJson("plugins/one/api-key/claude.json");
+const cursorApiKey = await readJson("plugins/one/api-key/cursor.json");
+const openCodeApiKey = await readJson("plugins/one/api-key/opencode.json");
 
 assert.equal(manifest.apps, "./.app.json");
 assert.equal("mcpServers" in manifest, false);
@@ -92,7 +96,7 @@ assert.match(skill, /Before `delete_project_task`[\s\S]*exact title and current 
 assert.match(skill, /Use `import_project_tasks` for strict task imports and `upsert_project_milestones` for strict milestone imports/);
 assert.match(skill, /`list_project_tasks` with `tracking_context: true`[\s\S]*fresh `project_revision`/);
 assert.match(skill, /stable, immutable `import_key`[\s\S]*exact same logical record/);
-assert.match(skill, /Project editors may import only `Backlog` tasks[\s\S]*Project managers and ONE owners or administrators may preserve historical task statuses/);
+assert.match(skill, /Project editors, project managers, and ONE owners or administrators may import any task status currently configured on the project/);
 assert.match(skill, /all-or-nothing[\s\S]*do not fall back to `create_project_tasks`[\s\S]*partial replacement/);
 assert.match(skill, /After a successful import[\s\S]*re-read current project\/task context/);
 assert.match(skill, /Hiring intentionally remains a ONE UI-only capability/);
@@ -143,6 +147,15 @@ assert.match(pluginReadme, /confirm that the instruction file exists at that exa
 assert.match(pluginReadme, /do not copy `\.\/skills\/one\/SKILL\.md` into a global or unrelated project configuration/);
 assert.match(pluginReadme, /custom web connector[\s\S]*loads only the MCP connection; it does not load the shared workflow skill or its safeguards/);
 assert.match(pluginReadme, /Use that fallback only when those workflow safeguards are not needed/);
+assert.match(pluginReadme, /Member MCP access — 90 days/);
+assert.match(pluginReadme, /ChatGPT web does not accept these local direct-MCP templates/);
+assert.match(codexApiKey, /bearer_token_env_var = "ONE_MCP_API_KEY"/);
+assert.equal(claudeApiKey.mcpServers["one-api-key"].headers.Authorization, "Bearer ${ONE_MCP_API_KEY}");
+assert.equal(cursorApiKey.mcpServers["one-api-key"].headers.Authorization, "Bearer ${env:ONE_MCP_API_KEY}");
+assert.equal(openCodeApiKey.mcp["one-api-key"].headers.Authorization, "Bearer {env:ONE_MCP_API_KEY}");
+for (const value of [codexApiKey, JSON.stringify(claudeApiKey), JSON.stringify(cursorApiKey), JSON.stringify(openCodeApiKey)]) {
+  assert.equal(/gcrm_[A-Za-z0-9_-]+/.test(value), false, "fallback templates must not contain a real-looking key");
+}
 
 assert.match(workflow, /node --test tests\/plugin-contract\.test\.mjs/);
 assert.match(workflow, /permissions:\s*\n\s*contents: read/);

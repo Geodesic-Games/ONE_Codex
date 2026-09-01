@@ -1,6 +1,16 @@
 # ONE plugin and remote MCP
 
-ONE is a hosted operational workspace exposed to compatible AI clients through a remote Streamable HTTP MCP server. Interactive users authenticate with OAuth; ONE applies their live permissions on every request. Do not configure an API key for a person using ChatGPT, Codex, Claude, Cursor, or OpenCode.
+ONE is a hosted operational workspace exposed to compatible AI clients through a remote Streamable HTTP MCP server. OAuth is the preferred interactive connection. While a native app connection is unavailable, Codex, Claude, Cursor, and OpenCode may use a temporary Member MCP key; ONE still reloads the key owner's live role and grants on every request.
+
+## Direct Member MCP key fallback
+
+Create **Member MCP access — 90 days** from ONE's Agent Keys dialog. Store the one-time secret in an approved credential manager, expose it to the client only as `ONE_MCP_API_KEY`, and merge the matching file under `api-key/` into that client's existing configuration. Never commit the secret or paste it into a prompt, screenshot, issue, or configuration file.
+
+The examples intentionally register `one-api-key`, not `one`. Disable the OAuth `one` connection while using this fallback so the same tools are not installed twice. A Member MCP key follows the owner's current ONE permissions and expires after 90 days. Revocation, user deactivation, or removal of a board, project, sharing, or module grant takes effect on the next call.
+
+The fallback excludes administration, connected-app and access-grant management, mailbox scans, Google Drive authorization/transfers, protected backup payload export, and Hiring. ChatGPT web does not accept these local direct-MCP templates; use the approved ONE app there when available.
+
+Before troubleshooting, confirm only that `ONE_MCP_API_KEY` is present in the client process; never print its value. After testing, revoke the key in ONE, remove the `one-api-key` entry, clear the environment variable, and re-enable the OAuth `one` connection.
 
 ## ChatGPT and Codex
 
@@ -21,7 +31,7 @@ codex plugin add one@geotech-one
 codex plugin list
 ```
 
-For development or a dedicated deployment, a direct MCP entry can be added in Codex settings with its own HTTPS resource URL. Use OAuth discovery; do not add a bearer-token environment variable for an interactive user.
+For the temporary key fallback, merge `api-key/codex.toml` into Codex config and launch Codex from a process that has `ONE_MCP_API_KEY` set.
 
 ## Claude Desktop and Claude Code
 
@@ -50,7 +60,7 @@ Users who do not need the workflow skill can instead add `https://one.geotech.on
 
 ## OpenCode
 
-OpenCode's in-process plugin API is not needed for hosted ONE. Use the native remote MCP configuration in `opencode.json`; OAuth discovery, PKCE, refresh, and dynamic client registration are handled by OpenCode.
+OpenCode's in-process plugin API is not needed for hosted ONE. Use the native remote MCP configuration in `opencode.json` for OAuth, or merge `api-key/opencode.json` for the temporary Member MCP key fallback.
 
 Merge the `mcp.one` entry into the user's existing OpenCode configuration. Do not replace unrelated providers, agents, permissions, or MCP servers.
 
