@@ -11,7 +11,8 @@ const readJson = async (relativePath) =>
   JSON.parse(await readFile(path.join(repositoryRoot, relativePath), "utf8"));
 
 const manifest = await readJson("plugins/one/.codex-plugin/plugin.json");
-const appConfig = await readJson("plugins/one/.app.json");
+const codexMcpConfig = await readJson("plugins/one/.mcp.json");
+const futureChatGptApp = await readJson("platforms/chatgpt/.app.json");
 const openAiMarketplace = await readJson(".agents/plugins/marketplace.json");
 const claudeManifest = await readJson("plugins/one/.claude-plugin/plugin.json");
 const claudeMarketplace = await readJson(".claude-plugin/marketplace.json");
@@ -19,6 +20,7 @@ const cursorManifest = await readJson("plugins/one/.cursor-plugin/plugin.json");
 const cursorMarketplace = await readJson(".cursor-plugin/marketplace.json");
 const openCodeConfig = await readJson("plugins/one/opencode.json");
 const skill = await readFile(path.join(pluginRoot, "skills", "one", "SKILL.md"), "utf8");
+const rootReadme = await readFile(path.join(repositoryRoot, "README.md"), "utf8");
 const pluginReadme = await readFile(path.join(pluginRoot, "README.md"), "utf8");
 const workflow = await readFile(path.join(repositoryRoot, ".github", "workflows", "plugin-contract.yml"), "utf8");
 const codexApiKey = await readFile(path.join(pluginRoot, "api-key", "codex.toml"), "utf8");
@@ -26,10 +28,22 @@ const claudeApiKey = await readJson("plugins/one/api-key/claude.json");
 const cursorApiKey = await readJson("plugins/one/api-key/cursor.json");
 const openCodeApiKey = await readJson("plugins/one/api-key/opencode.json");
 
-assert.equal(manifest.apps, "./.app.json");
-assert.equal("mcpServers" in manifest, false);
-assert.match(manifest.version, /^0\.5\.0\+cross-client\.\d{14}$/);
-assert.deepEqual(appConfig, {
+assert.equal(manifest.mcpServers, "./.mcp.json");
+assert.equal("apps" in manifest, false);
+assert.match(manifest.version, /^0\.6\.0\+codex\.\d{14}$/);
+assert.deepEqual(codexMcpConfig, {
+  mcpServers: {
+    one: {
+      type: "http",
+      url: "https://one.geotech.one/api/mcp",
+    },
+  },
+});
+assert.equal(JSON.stringify(codexMcpConfig).includes("ONE_MCP_API_KEY"), false);
+assert.equal(JSON.stringify(codexMcpConfig).includes("headers"), false);
+assert.equal(JSON.stringify(codexMcpConfig).includes("clientId"), false);
+assert.equal(JSON.stringify(codexMcpConfig).includes("tenant"), false);
+assert.deepEqual(futureChatGptApp, {
   apps: {
     one: {
       id: "asdk_app_6a6ee591f94881918c3a963540af007a",
@@ -149,6 +163,17 @@ assert.match(pluginReadme, /custom web connector[\s\S]*loads only the MCP connec
 assert.match(pluginReadme, /Use that fallback only when those workflow safeguards are not needed/);
 assert.match(pluginReadme, /Member MCP access — 90 days/);
 assert.match(pluginReadme, /ChatGPT web does not accept these local direct-MCP templates/);
+assert.match(pluginReadme, /personal ChatGPT Plus or Pro account/);
+assert.match(pluginReadme, /Codex Desktop only/);
+assert.match(pluginReadme, /select \*\*Authenticate\*\*/i);
+assert.match(pluginReadme, /remove or disable[\s\S]*`one-api-key`/);
+assert.match(pluginReadme, /manually configured user-level `one` MCP connection/);
+assert.doesNotMatch(pluginReadme, /Select \*\*Connect\*\*/);
+assert.match(rootReadme, /personal ChatGPT Plus or Pro account/);
+assert.match(rootReadme, /ChatGPT web remains outside this release/);
+assert.match(rootReadme, /No terminal command or `ONE_MCP_API_KEY` environment variable is required/);
+assert.match(rootReadme, /manually configured user-level `one` MCP connection/);
+assert.doesNotMatch(rootReadme, /ChatGPT and Codex[\s\S]*required `\.app\.json`/);
 assert.match(codexApiKey, /bearer_token_env_var = "ONE_MCP_API_KEY"/);
 assert.equal(claudeApiKey.mcpServers["one-api-key"].headers.Authorization, "Bearer ${ONE_MCP_API_KEY}");
 assert.equal(cursorApiKey.mcpServers["one-api-key"].headers.Authorization, "Bearer ${env:ONE_MCP_API_KEY}");
@@ -161,7 +186,7 @@ assert.match(workflow, /node --test tests\/plugin-contract\.test\.mjs/);
 assert.match(workflow, /permissions:\s*\n\s*contents: read/);
 
 const connectionCounts = {
-  openai: Object.keys(appConfig.apps).length,
+  openai: Object.keys(codexMcpConfig.mcpServers).length,
   claude: Object.keys(claudeManifest.mcpServers).length,
   cursor: Object.keys(cursorManifest.mcpServers).length,
   opencode: Object.keys(openCodeConfig.mcp).length,
@@ -169,9 +194,9 @@ const connectionCounts = {
 assert.deepEqual(connectionCounts, { openai: 1, claude: 1, cursor: 1, opencode: 1 });
 
 await assert.rejects(
-  access(path.join(pluginRoot, ".mcp.json"), fsConstants.F_OK),
+  access(path.join(pluginRoot, ".app.json"), fsConstants.F_OK),
   /ENOENT/,
-  "the raw MCP declaration must not ship alongside the app connector",
+  "the approval-dependent app connector must not ship beside the direct Codex MCP connection",
 );
 
 console.log("ONE plugin connector contract is valid.");

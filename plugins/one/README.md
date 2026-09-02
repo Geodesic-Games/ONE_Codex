@@ -1,8 +1,10 @@
 # ONE plugin and remote MCP
 
-ONE is a hosted operational workspace exposed to compatible AI clients through a remote Streamable HTTP MCP server. OAuth is the preferred interactive connection. While a native app connection is unavailable, Codex, Claude, Cursor, and OpenCode may use a temporary Member MCP key; ONE still reloads the key owner's live role and grants on every request.
+ONE is a hosted operational workspace exposed to compatible AI clients through a remote Streamable HTTP MCP server. In Codex Desktop, the plugin installs that remote server directly and uses ONE OAuth. A personal ChatGPT Plus or Pro account can authorize its own ONE account without a ChatGPT Team or Enterprise workspace, an API key, or a terminal command.
 
-## Direct Member MCP key fallback
+This release is Codex Desktop only on OpenAI surfaces. ChatGPT web requires the separately registered ONE app to complete OpenAI approval and does not load this plugin's local MCP declaration.
+
+## Advanced Member MCP key fallback
 
 Create **Member MCP access — 90 days** from ONE's Agent Keys dialog. Store the one-time secret in an approved credential manager, expose it to the client only as `ONE_MCP_API_KEY`, and merge the matching file under `api-key/` into that client's existing configuration. Never commit the secret or paste it into a prompt, screenshot, issue, or configuration file.
 
@@ -10,20 +12,26 @@ The examples intentionally register `one-api-key`, not `one`. Disable the OAuth 
 
 The fallback excludes administration, connected-app and access-grant management, mailbox scans, Google Drive authorization/transfers, protected backup payload export, and Hiring. ChatGPT web does not accept these local direct-MCP templates; use the approved ONE app there when available.
 
-Before troubleshooting, confirm only that `ONE_MCP_API_KEY` is present in the client process; never print its value. After testing, revoke the key in ONE, remove the `one-api-key` entry, clear the environment variable, and re-enable the OAuth `one` connection.
+Before troubleshooting the fallback, confirm only that `ONE_MCP_API_KEY` is present in the client process; never print its value. After testing, revoke the key in ONE, remove the `one-api-key` entry, clear the environment variable, and re-enable the OAuth `one` connection.
 
-## ChatGPT and Codex
+## Codex Desktop
 
-The OpenAI package uses `.codex-plugin/plugin.json` and a single required registered app in `.app.json`. It intentionally does not include `.mcp.json`, because a second raw MCP declaration would compete with the native app connection.
+The Codex package uses `.codex-plugin/plugin.json` and exactly one remote server in `.mcp.json`. It intentionally does not ship the approval-dependent `.app.json` connection beside that server, because doing so would install competing ONE connections.
 
 In Codex desktop:
 
 1. Open **Plugins → Create → Add plugin marketplace**.
 2. Add `Geodesic-Games/ONE_Codex` from `main`.
 3. Install **ONE** from the `geotech-one` marketplace.
-4. Select **Connect**, complete ONE sign-in, restart Codex, and start a new task.
+4. Select **Authenticate** when Codex prompts for ONE access.
+5. Sign into ONE in the browser, review the requested scopes, and authorize the client.
+6. Restart Codex and start a new task.
 
-CLI marketplace installation is equivalent:
+Installation and authentication are completed through the Codex interface; no terminal command or API-key environment variable is required. ONE OAuth is independent of the person's ChatGPT identity: the ONE account and its current permissions determine which tools and records are available.
+
+Before authenticating, remove or disable any manually configured user-level `one` MCP connection, as well as any `one-api-key`, `one_api_key`, or `one-amazon-import` connection. Keep only the plugin-managed `one` connection; otherwise Codex can load duplicate ONE tools under different OAuth or API-key identities.
+
+The optional CLI marketplace installation remains available to developers:
 
 ```text
 codex plugin marketplace add Geodesic-Games/ONE_Codex --ref main
@@ -31,7 +39,11 @@ codex plugin add one@geotech-one
 codex plugin list
 ```
 
-For the temporary key fallback, merge `api-key/codex.toml` into Codex config and launch Codex from a process that has `ONE_MCP_API_KEY` set.
+For the advanced key fallback, merge `api-key/codex.toml` into Codex config and launch Codex from a process that has `ONE_MCP_API_KEY` set. Do not configure the OAuth and key-backed connections at the same time.
+
+## ChatGPT web
+
+ChatGPT web is not supported by this Codex Desktop package. The future registered ONE app mapping is preserved under `platforms/chatgpt/`, outside the active plugin, for a later OpenAI approval and release. Direct Codex OAuth does not make the app available in ordinary ChatGPT web chats.
 
 ## Claude Desktop and Claude Code
 
@@ -85,7 +97,7 @@ Across clients:
 1. Discover the boards and projects the signed-in person can currently access.
 2. Read the exact target and its current revision before a write.
 3. For reconciliation-safe tracker work, use `import_project_tasks` and `upsert_project_milestones` with immutable import keys.
-4. Project editors may import Backlog tasks only. Project managers and ONE owner/admin users may preserve historical statuses.
+4. Project editors, project managers, and ONE owner/admin users may import any status currently configured on the project.
 5. Verify the resulting tasks and milestones in ONE after the mutation.
 6. Disconnect a client from ONE's **Connected apps** control when access is no longer needed.
 

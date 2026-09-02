@@ -1,0 +1,8 @@
+{
+  "mcpServers": {
+    "one": {
+      "type": "http",
+      "url": "https://one.geotech.one/api/mcp"
+    }
+  }
+}
