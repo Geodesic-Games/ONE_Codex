@@ -29,7 +29,7 @@ In Codex desktop:
 
 Installation and authentication are completed through the Codex interface; no terminal command or API-key environment variable is required. ONE OAuth is independent of the person's ChatGPT identity: the ONE account and its current permissions determine which tools and records are available.
 
-Before authenticating, remove or disable any manually configured user-level `one` MCP connection, as well as any `one-api-key`, `one_api_key`, or `one-amazon-import` connection. Keep only the plugin-managed `one` connection; otherwise Codex can load duplicate ONE tools under different OAuth or API-key identities.
+Before authenticating, remove or disable any manually configured user-level `ONE` or `one` MCP connection, as well as any `one-api-key`, `one_api_key`, or `one-amazon-import` connection. Keep only the plugin-managed `one` connection; otherwise Codex can load duplicate ONE tools under different OAuth or API-key identities.
 
 The optional CLI marketplace installation remains available to developers:
 

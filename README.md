@@ -24,7 +24,7 @@ Detailed client-specific instructions are in [plugins/one/README.md](plugins/one
 
 For Codex Desktop, add the marketplace `Geodesic-Games/ONE_Codex` from the Plugins interface, install **ONE**, and select **Authenticate**. Codex discovers ONE's OAuth server, opens the ONE sign-in page, and stores the resulting OAuth session. Restart Codex and start a new task after authorization. No terminal command or `ONE_MCP_API_KEY` environment variable is required.
 
-Before using the plugin, remove or disable any manually configured user-level `one` MCP connection, as well as any `one-api-key`, `one_api_key`, or `one-amazon-import` connection. Keep only the plugin-managed `one` connection so ONE's tools and OAuth identity are loaded exactly once.
+Before using the plugin, remove or disable any manually configured user-level `ONE` or `one` MCP connection, as well as any `one-api-key`, `one_api_key`, or `one-amazon-import` connection. Keep only the plugin-managed `one` connection so ONE's tools and OAuth identity are loaded exactly once.
 
 For Claude Code, add this repository as a marketplace and install the plugin:
 
