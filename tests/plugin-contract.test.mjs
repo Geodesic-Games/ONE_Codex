@@ -30,7 +30,7 @@ const openCodeApiKey = await readJson("plugins/one/api-key/opencode.json");
 
 assert.equal(manifest.mcpServers, "./.mcp.json");
 assert.equal("apps" in manifest, false);
-assert.match(manifest.version, /^0\.6\.0\+codex\.\d{14}$/);
+assert.match(manifest.version, /^0\.7\.0\+codex\.\d{14}$/);
 assert.deepEqual(codexMcpConfig, {
   mcpServers: {
     one: {
@@ -59,6 +59,13 @@ assert.match(skill, /call `get_brand_standards`/);
 assert.match(skill, /presentation, Complex Decision brief/);
 assert.match(skill, /ONE\/Firebase-hosted asset URLs/);
 assert.match(skill, /organization's ONE-published branding/);
+assert.match(skill, /Use the ONE deck tools[\s\S]*without cloning a repository or running a deployment/);
+assert.match(skill, /`save_deck_draft`[\s\S]*exact current `expected_revision`/);
+assert.match(skill, /one-time browser setup link[\s\S]*never ask for, accept, repeat, retrieve, or log the passcode/);
+assert.match(skill, /`upload_deck_asset`[\s\S]*exact current `expected_revision`/);
+assert.match(skill, /`unpublish_deck`[\s\S]*exact current published revision ID/);
+assert.match(skill, /Before `publish_deck`[\s\S]*obtain explicit confirmation/);
+assert.match(skill, /no GitHub action or Firebase deployment is required/);
 assert.doesNotMatch(skill, /Calliope/);
 assert.doesNotMatch(skill, /GeoTech mark|Outfit|IBM Plex Sans/);
 assert.match(skill, /Call `get_signature_request` before every mutation/);
@@ -122,6 +129,7 @@ for (const forbiddenHiringTool of ["hiring_", "create_candidate", "update_candid
 assert.equal(skill.includes("drive.google"), false);
 assert.equal(skill.includes("docs.google"), false);
 assert.match(manifest.interface.capabilities.join("\n"), /Brand standards/);
+assert.match(manifest.interface.capabilities.join("\n"), /Branded HTML\/PDF decks/);
 assert.match(manifest.interface.capabilities.join("\n"), /Hardware lifecycle/);
 assert.match(manifest.interface.capabilities.join("\n"), /Private documents/);
 assert.match(manifest.interface.capabilities.join("\n"), /Protected backups/);
