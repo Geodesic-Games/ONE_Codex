@@ -2,6 +2,8 @@
 
 ONE is a hosted operational workspace exposed to compatible AI clients through a remote Streamable HTTP MCP server. In Codex Desktop, the plugin installs that remote server directly and uses ONE OAuth. A personal ChatGPT Plus or Pro account can authorize its own ONE account without a ChatGPT Team or Enterprise workspace, an API key, or a terminal command.
 
+The same single plugin can create, review, passcode-protect, publish, and unpublish branded client decks at `https://decks.geotech.one/<slug>`, including a matching downloadable PDF. Content-only deck updates use the hosted ONE API and do not require a GeoCRM checkout, GitHub action, or Firebase deployment.
+
 This release is Codex Desktop only on OpenAI surfaces. ChatGPT web requires the separately registered ONE app to complete OpenAI approval and does not load this plugin's local MCP declaration.
 
 ## Advanced Member MCP key fallback

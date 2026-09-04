@@ -1,6 +1,6 @@
 ---
 name: one
-description: Use when the user wants to inspect or manage ONE boards, columns, items, comments, project planning, Procurement, Remote Machines, administration audits, private item files, Hardware assets and documents, People documents, Finance records and workflows, protected backups, or intentionally retrieve their organization's ONE-published branding. The remote MCP server enforces the connected person's current permissions through OAuth or a time-limited Member MCP key.
+description: Use when the user wants to inspect or manage ONE boards, columns, items, comments, project planning, Procurement, Remote Machines, administration audits, private item files, Hardware assets and documents, People documents, Finance records and workflows, protected backups, publish branded HTML/PDF client decks, or intentionally retrieve their organization's ONE-published branding. The remote MCP server enforces the connected person's current permissions through OAuth or a time-limited Member MCP key.
 ---
 
 # ONE
@@ -15,6 +15,16 @@ Use the ONE app connector tools for ONE workspace and board work.
 - Start from the returned approved artwork or a published template. Never redraw, recolour, crop, stretch, distort, rotate, or rebuild the organization's mark or its lockups.
 - Apply only the typography and design rules returned by the connected organization's current standard.
 - Review the finished composition at its actual delivery size before sharing or publishing it.
+
+## Client deck publishing
+
+1. Use the ONE deck tools when the user wants to create or update a hosted HTML deck without cloning a repository or running a deployment. Call `get_brand_standards` before drafting so the deck uses the organization's current published artwork, colours, and typography.
+2. Start with `list_decks`; call `get_deck` before changing an existing deck. Treat its `revision`, published revision, public URL, PDF URL, and access mode as authoritative.
+3. Build a schema-version `1.0` deck with 2–40 sections. Classify uncertain claims and external statements visibly as hypotheses, proposals, or research pending. Use only approved ONE-hosted brand artwork and asset IDs returned by `upload_deck_asset`; never place private storage paths or download tokens in deck content.
+4. Save with `save_deck_draft` and the exact current `expected_revision`. If the service reports a revision conflict, re-read the deck and reconcile the user's changes instead of overwriting the newer draft.
+5. For images or video, upload bounded base64 content with `upload_deck_asset`, then reference the returned asset ID in the draft. Use `set_deck_access` only when the user explicitly requests public or passcode access. Passcodes are write-only secrets: never repeat, retrieve, log, or place them in deck content.
+6. Before `publish_deck`, call `get_deck`, show the exact title, route, access mode, and revision that will become public, and obtain explicit confirmation. Publish with that exact revision. ONE snapshots the draft and current brand standard together and generates the matching downloadable PDF; no GitHub action or Firebase deployment is required for this content-only update.
+7. After publishing, verify the returned public and PDF URLs. Use `unpublish_deck` only after explicit confirmation; explain that it removes public access while preserving the editable draft and immutable revision history.
 
 ## Start with access context
 
