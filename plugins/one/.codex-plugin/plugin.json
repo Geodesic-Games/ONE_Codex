@@ -1,6 +1,6 @@
 {
   "name": "one",
-  "version": "0.7.0+codex.20260904071615",
+  "version": "0.8.0+codex.20260910103853",
   "description": "Use ONE operational workspaces and publish branded client decks from Codex Desktop with per-user OAuth and live permissions.",
   "author": {
     "name": "GeoTech",
