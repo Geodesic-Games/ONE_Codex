@@ -30,7 +30,7 @@ const openCodeApiKey = await readJson("plugins/one/api-key/opencode.json");
 
 assert.equal(manifest.mcpServers, "./.mcp.json");
 assert.equal("apps" in manifest, false);
-assert.match(manifest.version, /^0\.7\.0\+codex\.\d{14}$/);
+assert.match(manifest.version, /^0\.8\.0\+codex\.\d{14}$/);
 assert.deepEqual(codexMcpConfig, {
   mcpServers: {
     one: {
@@ -81,7 +81,7 @@ assert.match(skill, /`set_remote_machine_color`, `archive_remote_machine`, and `
 assert.match(skill, /Before `archive_remote_machine`[\s\S]*exact current machine name as `confirm_machine_name`/);
 assert.match(skill, /Use `get_administration_audit` only for read-only review/);
 assert.match(skill, /audit omits API-key hashes, reusable secrets, bridge settings, connector tokens/);
-assert.match(skill, /User\/grant mutation, invitation management, API-key creation\/revocation[\s\S]*intentionally not plugin tools/);
+assert.match(skill, /API-key creation\/revocation[\s\S]*intentionally not plugin tools/);
 assert.match(skill, /use the file ID returned by `get_item` with `get_item_file`/);
 assert.match(skill, /never request or expose a storage object path/);
 assert.match(skill, /Board and column structure tools are for ONE owners and administrators only/);
