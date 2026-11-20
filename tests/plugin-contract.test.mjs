@@ -30,7 +30,7 @@ const openCodeApiKey = await readJson("plugins/one/api-key/opencode.json");
 
 assert.equal(manifest.mcpServers, "./.mcp.json");
 assert.equal("apps" in manifest, false);
-assert.match(manifest.version, /^0\.8\.0\+codex\.\d{14}$/);
+assert.match(manifest.version, /^0\.9\.0\+codex\.\d{14}$/);
 assert.deepEqual(codexMcpConfig, {
   mcpServers: {
     one: {
@@ -106,6 +106,7 @@ assert.match(skill, /`move_hardware_asset`[\s\S]*stable `idempotency_key`/);
 assert.match(skill, /`archive_hardware_asset`[\s\S]*exact asset ID through `confirm_asset_id`/);
 assert.match(skill, /`list_hardware_documents`[\s\S]*`delete_hardware_document`/);
 assert.match(skill, /People documents are more sensitive[\s\S]*separate \*\*People Documents\*\* module grant/);
+assert.match(skill, /`import_people_document_from_google_drive` instead of reading the file[\s\S]*byte-for-byte[\s\S]*own OAuth session[\s\S]*Member MCP keys and service keys are refused[\s\S]*`duplicate: true`/);
 assert.match(skill, /`owner_type: person`[\s\S]*`owner_type: company`/);
 assert.match(skill, /`get_people_document`[\s\S]*`delete_people_document`/);
 assert.match(skill, /Start with `list_procurement_requests`, then call `get_procurement_request` before every write/);
